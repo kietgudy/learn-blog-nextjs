@@ -2,20 +2,33 @@
 import Form from "react-bootstrap/Form";
 import Button from "react-bootstrap/Button";
 import Modal from "react-bootstrap/Modal";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { mutate } from "swr";
 
 interface Props {
-  showModalCreate: boolean;
-  setShowModalCreate: (value: boolean) => void;
+  showModalUpdate: boolean;
+  setShowModalUpdate: (value: boolean) => void;
+  blog: Blog | null;
+  setBlog: (value: Blog | null) => void;
+  
 }
-function CreateModal(props: Props) {
-  const { showModalCreate, setShowModalCreate } = props;
+function UpdateModal(props: Props) {
+  const { showModalUpdate, setShowModalUpdate, blog, setBlog } = props;
 
+  const [id, setId] = useState<number>(0)
   const [title, setTitle] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
   const [content, setContent] = useState<string>("");
+
+  useEffect(() => {
+    if (blog && blog.id) {
+      setId(blog.id)
+      setTitle(blog.title)
+      setAuthor(blog.author)
+      setContent(blog.content)
+    }
+  }, [blog])
   const handleSubmit = () => {
     if (!title) {
       toast.error("Not empty title");
@@ -29,8 +42,8 @@ function CreateModal(props: Props) {
       toast.error("Not empty content");
       return;
     }
-    fetch("http://localhost:8000/blogs", {
-      method: "POST",
+    fetch(`http://localhost:8000/blogs/${id}`, {
+      method: 'PUT',
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",
@@ -40,7 +53,7 @@ function CreateModal(props: Props) {
       .then((res) => res.json())
       .then((res) => {
         if (res) {
-          toast.success("Create new blog success");
+          toast.success("Update new blog success");
           handleCloseModal();
           mutate("http://localhost:8000/blogs");
         }
@@ -50,12 +63,13 @@ function CreateModal(props: Props) {
     setTitle("");
     setAuthor("");
     setContent("");
-    setShowModalCreate(false);
+    setBlog(null);
+    setShowModalUpdate(false);
   };
   return (
     <>
       <Modal
-        show={showModalCreate}
+        show={showModalUpdate}
         backdrop="static"
         keyboard={false}
         size="lg"
@@ -109,4 +123,4 @@ function CreateModal(props: Props) {
   );
 }
 
-export default CreateModal;
+export default UpdateModal;
