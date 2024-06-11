@@ -4,6 +4,7 @@ import { Button } from "react-bootstrap";
 import { useState } from "react";
 import CreateModal from "./create.modal";
 import UpdateModal from "./update.modal";
+import Link from "next/link";
 
 interface Props {
   blogs: Blog[];
@@ -39,7 +40,9 @@ function AppTable(props: Props) {
                 <td>{item.title}</td>
                 <td>{item.author}</td>
                 <td>
-                  <Button variant="secondary">View</Button>
+                  <Button variant="secondary">
+                    <Link className="nav-link" href={`/blogs/${item.id}`}>View</Link>
+                  </Button>
                   <Button
                     variant="warning"
                     className="mx-3"
