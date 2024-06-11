@@ -11,24 +11,23 @@ interface Props {
   setShowModalUpdate: (value: boolean) => void;
   blog: Blog | null;
   setBlog: (value: Blog | null) => void;
-  
 }
 function UpdateModal(props: Props) {
   const { showModalUpdate, setShowModalUpdate, blog, setBlog } = props;
 
-  const [id, setId] = useState<number>(0)
+  const [id, setId] = useState<number>(0);
   const [title, setTitle] = useState<string>("");
   const [author, setAuthor] = useState<string>("");
   const [content, setContent] = useState<string>("");
 
   useEffect(() => {
     if (blog && blog.id) {
-      setId(blog.id)
-      setTitle(blog.title)
-      setAuthor(blog.author)
-      setContent(blog.content)
+      setId(blog.id);
+      setTitle(blog.title);
+      setAuthor(blog.author);
+      setContent(blog.content);
     }
-  }, [blog])
+  }, [blog]);
   const handleSubmit = () => {
     if (!title) {
       toast.error("Not empty title");
@@ -43,7 +42,7 @@ function UpdateModal(props: Props) {
       return;
     }
     fetch(`http://localhost:8000/blogs/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       headers: {
         Accept: "application/json, text/plain, */*",
         "Content-Type": "application/json",

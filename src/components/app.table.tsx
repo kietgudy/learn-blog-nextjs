@@ -5,6 +5,8 @@ import { useState } from "react";
 import CreateModal from "./create.modal";
 import UpdateModal from "./update.modal";
 import Link from "next/link";
+import { toast } from "react-toastify";
+import { mutate } from "swr";
 
 interface Props {
   blogs: Blog[];
@@ -14,6 +16,24 @@ function AppTable(props: Props) {
   const [blog, setBlog] = useState<Blog | null>(null);
   const [showModalUpdate, setShowModalUpdate] = useState<boolean>(false);
   const [showModalCreate, setShowModalCreate] = useState<boolean>(false);
+  const handleDeleteBlog = (id: number) => {
+    if (confirm(`Do you want to delete this blog id: ${id}`)) {
+      fetch(`http://localhost:8000/blogs/${id}`, {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json, text/plain, */*",
+          "Content-Type": "application/json",
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => {
+          if (res) {
+            toast.success("Delete blog success");
+            mutate("http://localhost:8000/blogs");
+          }
+        });
+    }
+  };
   return (
     <>
       <div
@@ -41,7 +61,9 @@ function AppTable(props: Props) {
                 <td>{item.author}</td>
                 <td>
                   <Button variant="secondary">
-                    <Link className="nav-link" href={`/blogs/${item.id}`}>View</Link>
+                    <Link className="nav-link" href={`/blogs/${item.id}`}>
+                      View
+                    </Link>
                   </Button>
                   <Button
                     variant="warning"
@@ -53,7 +75,12 @@ function AppTable(props: Props) {
                   >
                     Update
                   </Button>
-                  <Button variant="danger">Delete</Button>
+                  <Button
+                    onClick={() => handleDeleteBlog(item.id)}
+                    variant="danger"
+                  >
+                    Delete
+                  </Button>
                 </td>
               </tr>
             );
